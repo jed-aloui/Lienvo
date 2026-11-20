@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hublot – téléphone</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Figtree:wght@400;600&display=swap">
 <link rel="stylesheet" href="/hublot.css">
 <style>
 main{max-width:30rem;margin:0 auto;padding:1.25rem 1.25rem 3rem}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
+.head-actions{display:flex;align-items:center;gap:.7rem}
 .state{display:flex;align-items:center;gap:.45rem;font-size:.95rem}
 .state::before{content:"";width:.7rem;height:.7rem;border-radius:50%;background:var(--mist)}
 .state.on::before{background:var(--ok)}
@@ -25,11 +25,13 @@ label{display:block;font-weight:600;margin-bottom:.5rem}
 #sent{list-style:none;margin:1.5rem 0 0;padding:0}
 #sent li{padding:.6rem 0;border-top:1px solid var(--mist);overflow-wrap:anywhere}
 #sent progress{display:block;width:100%;height:.5rem;margin-top:.35rem;accent-color:var(--cobalt)}
+footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--mist);font-size:.85rem;color:var(--muted)}
+footer a{display:inline-block;margin-right:.65rem}
 </style>
 </head>
 <body>
 <main>
-  <header><span class="brand">Hublot</span><span id="state" class="state">Non connecté</span></header>
+  <header><span class="brand">Hublot</span><div class="head-actions"><button id="theme" class="btn" type="button" aria-pressed="false">Mode sombre</button><span id="state" class="state">Non connecté</span></div></header>
 
   <section id="s1">
     <h1>Entrez le code affiché sur l’écran.</h1>
@@ -50,11 +52,20 @@ label{display:block;font-weight:600;margin-bottom:.5rem}
     </div>
     <ul id="sent"></ul>
   </section>
+  <footer><a href="/conditions.html">Conditions</a><a href="/confidentialite.html">Confidentialité</a><a href="/mentions-legales.html">Mentions légales</a></footer>
 </main>
 
 <script>
 const $ = s => document.querySelector(s);
 let ws, pc, ctl, files, stream, track, sender, wake, ice = [], chain = Promise.resolve(), facing = 'environment';
+
+function setTheme(dark) {
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  $('#theme').textContent = dark ? 'Mode clair' : 'Mode sombre';
+  $('#theme').setAttribute('aria-pressed', String(dark));
+}
+setTheme(window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false);
+$('#theme').onclick = () => setTheme(document.documentElement.dataset.theme !== 'dark');
 
 const sig = data => ws.send(JSON.stringify({ type: 'signal', data }));
 const setState = (txt, on) => { $('#state').textContent = txt; $('#state').classList.toggle('on', !!on); };
