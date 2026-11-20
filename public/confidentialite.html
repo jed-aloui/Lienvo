@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confidentialité et cookies – Hublot</title>
+  <link rel="stylesheet" href="/hublot.css">
+  <style>main{max-width:52rem;margin:auto;padding:2rem}article{background:var(--surface);padding:clamp(1rem,4vw,2rem);border:1px solid var(--mist);border-radius:16px}h1{margin-bottom:1rem}h2{margin-top:1.8rem;font-size:1.25rem}footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--mist)}a{color:var(--cobalt)}</style>
+</head>
+<body><main>
+  <p><a href="/">← Retour à Hublot</a></p>
+  <article>
+    <h1>Confidentialité et cookies</h1>
+    <p>Dernière mise à jour : 20 novembre 2026.</p>
+    <p>Hublot est un projet personnel gratuit, sans compte utilisateur et sans outil de mesure d’audience, publicité ou profilage.</p>
+    <h2>Données utilisées pour faire fonctionner Hublot</h2>
+    <ul>
+      <li><strong>Adresse IP :</strong> transmise au Worker Cloudflare lors des connexions. Le service l’utilise en mémoire pour limiter les essais de codes invalides (seuil de 8 essais sur une fenêtre d’une minute). L’application ne crée pas de profil d’utilisateur.</li>
+      <li><strong>Code d’appairage :</strong> un code aléatoire à 6 chiffres est utilisé pour joindre les appareils. Il expire au bout de 5 minutes et ne peut être utilisé qu’une fois. Le code et les connexions associées sont gardés en mémoire de fonctionnement, pas dans une base Hublot.</li>
+      <li><strong>Signalisation WebRTC :</strong> des messages temporaires servent à négocier la connexion entre les deux navigateurs. La vidéo et les fichiers sont ensuite envoyés directement entre les appareils lorsque la connexion pair-à-pair fonctionne ; Hublot ne les enregistre pas sur un espace de stockage applicatif.</li>
+      <li><strong>Réseau :</strong> le navigateur interroge le service STUN de Cloudflare pour établir WebRTC. Les informations réseau nécessaires à cette connexion, dont l’adresse IP, peuvent être communiquées aux services réseau et à l’autre appareil.</li>
+    </ul>
+    <p>Cloudflare fournit l’hébergement du Worker et du Durable Object et peut traiter des données techniques de requête conformément à ses propres conditions et politiques. Consultez la <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener noreferrer">politique de confidentialité de Cloudflare</a>. La durée de conservation des journaux techniques du fournisseur dépend de ses réglages et politiques, et n’est pas contrôlée par Hublot.</p>
+    <h2>Cookies et traceurs</h2>
+    <p>Le code de Hublot ne dépose pas de cookie et n’utilise pas de traceur publicitaire ou de mesure d’audience. Le choix du thème sombre reste limité à la page ouverte et n’est pas enregistré. Le QR code est produit par le Worker Hublot ; les polices distantes et le générateur QR tiers ne sont pas chargés. Hublot n’affiche donc pas de bandeau de consentement pour des traceurs facultatifs. Le fournisseur d’hébergement peut toutefois appliquer ses propres mécanismes techniques de sécurité.</p>
+    <h2>Vos droits et contact</h2>
+    <p>Pour toute demande relative à vos données, écrivez à <a href="mailto:jed.aloui.developer@gmail.com">jed.aloui.developer@gmail.com</a>. Vous pouvez également adresser une réclamation à la <a href="https://www.cnil.fr/fr/plaintes" rel="noopener noreferrer">CNIL</a>. Les données de session étant temporaires et sans compte, une demande peut nécessiter des informations permettant d’identifier la connexion concernée.</p>
+    <h2>Précaution d’usage</h2>
+    <p>Ne laissez pas le code d’appairage visible ou accessible à une personne non autorisée. La connexion WebRTC peut révéler des informations réseau aux appareils appairés. N’activez la caméra et ne transférez des fichiers qu’avec l’accord des personnes concernées.</p>
+  </article>
+  <footer><a href="/conditions.html">Conditions d’utilisation</a> · <a href="/mentions-legales.html">Mentions légales</a></footer>
+</main></body>
+</html>
