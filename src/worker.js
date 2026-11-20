@@ -1,6 +1,7 @@
 // Hublot sur Cloudflare Workers : pages statiques + appairage (Durable Object).
 // La vidéo et les fichiers ne passent jamais ici : ils vont en pair à pair (WebRTC).
 import { DurableObject } from 'cloudflare:workers';
+import QRCode from 'qrcode';
 
 const TTL = 5 * 60 * 1000;  // validité d'un code
 const MAX_FAILS = 8;        // essais ratés par IP et par minute
@@ -15,11 +16,18 @@ export default {
       return env.HUB.get(env.HUB.idFromName('global')).fetch(request);
     }
     if (url.pathname === '/config') return config(env);
+    if (url.pathname === '/qr') return qr(url);
     if (url.pathname === '/') return asset('/index.html');
     if (url.pathname === '/p') return asset('/phone.html');
     return env.ASSETS.fetch(request);
   }
 };
+
+async function qr(url) {
+  const text = (url.searchParams.get('t') || '').slice(0, 300);
+  const svg = await QRCode.toString(text, { type: 'svg', margin: 1, color: { dark: '#10203A', light: '#FFFFFF' } });
+  return new Response(svg, { headers: { 'Content-Type': 'image/svg+xml; charset=utf-8', 'Cache-Control': 'no-store' } });
+}
 
 // STUN Cloudflare, plus TURN Cloudflare (TURN_KEY_ID + TURN_API_TOKEN) ou TURN générique (TURN_URL, TURN_USER, TURN_PASS)
 async function config(env) {
