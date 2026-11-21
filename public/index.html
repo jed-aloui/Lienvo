@@ -3,32 +3,248 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Conditions d’utilisation du service Lienvo.">
+  <meta name="description" content="Utilisez votre téléphone comme caméra pour votre ordinateur et transférez des fichiers entre vos appareils.">
   <meta name="theme-color" content="#EDF1F5">
-  <title>Conditions d’utilisation – Lienvo</title>
+  <title>Lienvo – caméra téléphone pour ordinateur</title>
   <link rel="stylesheet" href="/hublot.css">
-  <style>main{max-width:52rem;margin:auto;padding:1.25rem}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}article{padding:clamp(1rem,4vw,2rem);border:1px solid var(--mist);border-radius:18px}h1{margin-bottom:1rem;font-size:clamp(2rem,6vw,3rem)}h2{margin-top:1.8rem;font-size:1.25rem}footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--mist);font-size:.9rem}footer a{margin-right:.5rem}</style>
+  <style>
+    main{max-width:64rem;margin:auto;padding:2rem}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
+    .head-actions{display:flex;align-items:center;gap:1rem}
+    .state{font-size:.95rem}.state::before{content:"";display:inline-block;width:.7rem;height:.7rem;border-radius:50%;background:var(--mist);margin-right:.5rem}
+    .state.on::before{background:var(--ok)}
+    h1{font-size:clamp(2rem,5vw,3.5rem);margin-bottom:.5rem}
+    .layout{display:grid;grid-template-columns:1.2fr .8fr;gap:2rem;align-items:start}
+    .panel{border:2px solid var(--ink);border-radius:18px;padding:1.5rem;background:var(--surface)}
+    #code{font:800 clamp(2.5rem,7vw,4rem)/1 var(--display);letter-spacing:.08em;background:var(--chalk);padding:1rem;border-radius:12px;text-align:center;margin:1rem 0}
+    #qr{display:block;width:190px;height:190px;margin:1rem auto}
+    #video{width:100%;aspect-ratio:16/9;object-fit:contain;background:#10203A;border-radius:12px}
+    .controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+    #files{padding:0;list-style:none}
+    #files li{padding:.7rem 0;border-top:1px solid var(--mist);overflow-wrap:anywhere}
+    .hint{color:var(--muted)}
+    .fullscreen-help{font-size:.9rem;margin:.75rem 0 0}
+    #video:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;object-fit:contain;background:#000;border-radius:0}
+    #video.fullscreen-fallback{position:fixed;inset:0;z-index:1000;width:100vw;height:100vh;aspect-ratio:auto;object-fit:contain;background:#000;border-radius:0}
+    footer{margin:2rem 0 0;padding:1rem 0;border-top:1px solid var(--mist);font-size:.9rem;color:var(--muted)}
+    footer a{margin-right:1rem}
+    @media(max-width:700px){main{padding:1rem}.layout{grid-template-columns:1fr}}
+  </style>
 </head>
 <body>
 <main>
-  <header><a class="brand" href="/" aria-label="Lienvo, accueil">Lienvo</a><button id="theme" class="btn" type="button" aria-pressed="false">Mode sombre</button></header>
-  <article>
-    <h1>Conditions d’utilisation</h1>
-    <p>Dernière mise à jour : 21 novembre 2026.</p>
-    <p>Lienvo est un service gratuit, édité à titre personnel. Il permet de relier un téléphone à un ordinateur pour afficher la caméra du téléphone et transférer des fichiers entre les deux appareils. Aucun compte Lienvo n’est requis.</p>
-    <h2>Utilisation de la caméra et des fichiers</h2>
-    <p>Vous choisissez d’activer la caméra et d’envoyer un fichier. Les autorisations sont demandées par le navigateur. La caméra reste désactivée tant que vous ne l’activez pas. Vérifiez le code d’appairage et le destinataire avant de commencer. Le code temporaire donne accès à la session à toute personne qui le connaît pendant sa validité.</p>
-    <p>La vidéo et les fichiers sont transmis directement entre les navigateurs lorsque la connexion pair-à-pair est possible. Des données de signalisation et des informations réseau sont utilisées pour établir cette connexion. Le fonctionnement dépend des navigateurs, appareils et réseaux utilisés ; certains réseaux peuvent bloquer ou limiter la connexion.</p>
-    <p>Vous restez responsable des contenus filmés ou transférés et devez disposer des autorisations nécessaires. Ne filmez pas une personne sans son accord et ne transférez pas de contenu confidentiel ou personnel sans autorisation. Dans un établissement scolaire, respectez les consignes de l’établissement et obtenez les accords requis, notamment avant toute captation d’élèves ou de mineurs.</p>
-    <h2>Bon usage</h2>
-    <p>N’utilisez pas Lienvo pour accéder à un appareil sans autorisation, surveiller quelqu’un à son insu, enfreindre les droits d’autrui ou transmettre un contenu illicite. N’envoyez un fichier qu’à l’appareil que vous avez appairé. Les fichiers téléchargés sont ensuite sous le contrôle du navigateur et de l’appareil qui les reçoit.</p>
-    <h2>Disponibilité et évolution</h2>
-    <p>Lienvo est fourni gratuitement et « en l’état ». Son éditeur ne garantit pas une disponibilité permanente, une compatibilité avec tous les appareils, ni le succès de chaque connexion ou transfert. Le service peut être corrigé, modifié ou interrompu. Cette page ne limite pas les droits qui ne peuvent pas être écartés par la loi.</p>
-    <h2>Contact</h2>
-    <p>Pour toute question concernant ces conditions : <a href="mailto:jed.aloui.developer@gmail.com">jed.aloui.developer@gmail.com</a>.</p>
-  </article>
-  <footer><a href="/confidentialite.html">Confidentialité et cookies</a><a href="/mentions-legales.html">Mentions légales</a></footer>
+  <header>
+    <span class="brand">Lienvo</span>
+    <div class="head-actions">
+      <button id="theme" class="btn" type="button" aria-pressed="false">Mode sombre</button>
+      <span id="state" class="state">Connexion au serveur…</span>
+    </div>
+  </header>
+
+  <section class="layout">
+    <div>
+      <h1>Votre téléphone devient une caméra.</h1>
+      <p class="hint">Scannez le QR code ou ouvrez le lien sur votre téléphone, puis saisissez le code affiché.</p>
+      <div class="panel">
+        <strong>Code d’appairage</strong>
+        <div id="code">Connexion…</div>
+        <img id="qr" alt="QR code de connexion" hidden>
+        <p id="phoneLink" class="hint" style="text-align:center"></p>
+      </div>
+      <div class="panel" style="margin-top:1rem">
+        <h2>Fichiers reçus</h2>
+        <ul id="files"><li class="hint">Aucun fichier reçu pour le moment.</li></ul>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Caméra en direct</h2>
+      <video id="video" autoplay playsinline></video>
+      <p id="status" class="hint">En attente du téléphone…</p>
+      <div class="controls">
+        <button id="flip" class="btn" disabled>Changer de caméra</button>
+        <button id="torch" class="btn" disabled>Lampe torche</button>
+        <button id="fullscreen" class="btn" type="button" aria-pressed="false">Plein écran</button>
+      </div>
+      <p class="fullscreen-help hint">Cliquez sur « Plein écran » pour agrandir la vidéo. Appuyez sur Échap pour revenir ; F11 agrandit toute la page.</p>
+    </div>
+  </section>
+  <footer>
+    <a href="/conditions.html">Conditions d’utilisation</a>
+    <a href="/confidentialite.html">Confidentialité et cookies</a>
+    <a href="/mentions-legales.html">Mentions légales</a>
+  </footer>
 </main>
-<script src="/theme.js" defer></script>
+
+<script>
+const $ = s => document.querySelector(s);
+let ws, pc, ctl, ice = [], chain = Promise.resolve(), torchOn = false;
+let incoming = null, pendingIce = [];
+
+
+function setState(text, on = false) {
+  $('#state').textContent = text;
+  $('#state').classList.toggle('on', on);
+}
+function signal(data) {
+  if (ws?.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'signal', data }));
+  }
+}
+function showCode(code) {
+  $('#code').textContent = code.slice(0, 3) + ' ' + code.slice(3);
+  const link = location.origin + '/p?c=' + encodeURIComponent(code);
+  $('#phoneLink').innerHTML = '<a href="' + link + '" target="_blank" rel="noopener">Ouvrir la page téléphone</a>';
+  $('#qr').src = '/qr?t=' + encodeURIComponent(link);
+  $('#qr').hidden = false;
+}
+function setupPeer() {
+  pc = new RTCPeerConnection({ iceServers: ice });
+  pc.onicecandidate = e => { if (e.candidate) signal({ candidate: e.candidate }); };
+  pc.ontrack = e => {
+    $('#video').srcObject = e.streams[0];
+    $('#status').textContent = 'La caméra du téléphone est en direct.';
+    setState('Téléphone connecté', true);
+  };
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === 'connected') setState('Téléphone connecté', true);
+    if (pc.connectionState === 'failed') {
+      setState('Connexion WebRTC impossible');
+      $('#status').textContent = 'La connexion directe a échoué. Ce réseau peut nécessiter un serveur TURN.';
+    }
+  };
+  pc.ondatachannel = e => {
+    if (e.channel.label === 'ctl') {
+      ctl = e.channel;
+      ctl.onopen = () => {
+        $('#flip').disabled = false;
+        $('#torch').disabled = false;
+      };
+      ctl.onmessage = msg => {
+        try { $('#torch').disabled = !JSON.parse(msg.data).torch; } catch {}
+      };
+    }
+    if (e.channel.label === 'files') {
+      e.channel.binaryType = 'arraybuffer';
+      e.channel.onmessage = receiveFileData;
+    }
+  };
+}
+async function receiveSignal(data) {
+  if (!pc) setupPeer();
+  if (data.sdp) {
+    await pc.setRemoteDescription(data.sdp);
+    while (pendingIce.length) { try { await pc.addIceCandidate(pendingIce.shift()); } catch {} }
+    if (data.sdp.type === 'offer') {
+      await pc.setLocalDescription(await pc.createAnswer());
+      signal({ sdp: pc.localDescription });
+    }
+  } else if (data.candidate) {
+    if (!pc.remoteDescription) pendingIce.push(data.candidate);
+    else { try { await pc.addIceCandidate(data.candidate); } catch {} }
+  }
+}
+const MAX_FILE_BYTES = 50 * 1024 * 1024;
+function receiveFileData(event) {
+  const data = event.data;
+  if (typeof data === 'string') {
+    let msg;
+    try { msg = JSON.parse(data); } catch { return; }
+    if (msg.t === 'meta') {
+      if (!Number.isSafeInteger(msg.size) || msg.size < 0 || msg.size > MAX_FILE_BYTES) {
+        incoming = null;
+        $('#status').textContent = 'Fichier refusé : taille maximale de 50 Mo.';
+        return;
+      }
+      incoming = { name: msg.name || 'fichier', type: msg.type || 'application/octet-stream', size: msg.size, received: 0, chunks: [] };
+      $('#files').querySelector('.hint')?.remove();
+    } else if (msg.t === 'end' && incoming) {
+      const blob = new Blob(incoming.chunks, { type: incoming.type });
+      const url = URL.createObjectURL(blob);
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = url; a.download = incoming.name; a.textContent = 'Télécharger ' + incoming.name;
+      li.append(a); $('#files').prepend(li); incoming = null;
+    }
+  } else if (incoming && data instanceof ArrayBuffer) {
+    incoming.received += data.byteLength;
+    if (incoming.received > incoming.size) { incoming = null; return; }
+    incoming.chunks.push(data);
+  }
+}
+async function start() {
+  try {
+    const r = await fetch('/config');
+    ice = (await r.json()).iceServers || [];
+    ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+    ws.onopen = () => {
+      setState('Connecté au serveur', true);
+      ws.send(JSON.stringify({ type: 'host' }));
+    };
+    ws.onmessage = event => {
+      const msg = JSON.parse(event.data);
+      if (msg.type === 'code') showCode(msg.code);
+      else if (msg.type === 'paired') {
+        setState('Téléphone appairé', true);
+        $('#status').textContent = 'Connexion vidéo en cours…';
+        if (!pc) setupPeer();
+      } else if (msg.type === 'peer-left') {
+        if (pc) pc.close();
+        pendingIce = [];
+        pc = ctl = null;
+        $('#video').srcObject = null;
+        $('#status').textContent = 'Téléphone déconnecté. En attente d’un nouvel appairage…';
+        setState('En attente du téléphone');
+      } else if (msg.type === 'signal') {
+        chain = chain.then(() => receiveSignal(msg.data)).catch(console.error);
+      }
+    };
+    ws.onclose = () => setState('Serveur déconnecté');
+    ws.onerror = () => setState('Erreur de connexion au serveur');
+  } catch (e) {
+    setState('Erreur de connexion au serveur');
+    console.error(e);
+  }
+}
+$('#flip').onclick = () => ctl?.send(JSON.stringify({ cmd: 'flip' }));
+$('#torch').onclick = () => {
+  torchOn = !torchOn;
+  ctl?.send(JSON.stringify({ cmd: 'torch', on: torchOn }));
+  $('#torch').textContent = torchOn ? 'Éteindre la lampe' : 'Lampe torche';
+};
+const video = $('#video');
+const fullscreenButton = $('#fullscreen');
+function updateFullscreenButton() {
+  const active = document.fullscreenElement === video || video.classList.contains('fullscreen-fallback');
+  fullscreenButton.textContent = active ? 'Quitter le plein écran' : 'Plein écran';
+  fullscreenButton.setAttribute('aria-pressed', String(active));
+}
+fullscreenButton.onclick = async () => {
+  if (document.fullscreenElement) {
+    await document.exitFullscreen().catch(() => {});
+    return;
+  }
+  if (video.classList.contains('fullscreen-fallback')) {
+    video.classList.remove('fullscreen-fallback');
+    updateFullscreenButton();
+    return;
+  }
+  try {
+    if (!video.requestFullscreen) throw new Error('Fullscreen API indisponible');
+    await video.requestFullscreen();
+  } catch {
+    video.classList.add('fullscreen-fallback');
+    updateFullscreenButton();
+  }
+};
+document.addEventListener('fullscreenchange', updateFullscreenButton);
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && video.classList.contains('fullscreen-fallback')) {
+    video.classList.remove('fullscreen-fallback');
+    updateFullscreenButton();
+  }
+});
+start();
+</script>
 </body>
 </html>
