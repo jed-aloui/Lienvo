@@ -3,31 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Confidentialité et cookies – Hublot</title>
+  <meta name="description" content="Comment Lienvo traite les informations techniques nécessaires à la caméra et au transfert de fichiers.">
+  <meta name="theme-color" content="#EDF1F5">
+  <title>Confidentialité et cookies – Lienvo</title>
   <link rel="stylesheet" href="/hublot.css">
-  <style>main{max-width:52rem;margin:auto;padding:2rem}article{background:var(--surface);padding:clamp(1rem,4vw,2rem);border:1px solid var(--mist);border-radius:16px}h1{margin-bottom:1rem}h2{margin-top:1.8rem;font-size:1.25rem}footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--mist)}a{color:var(--cobalt)}</style>
+  <style>main{max-width:52rem;margin:auto;padding:1.25rem}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}article{padding:clamp(1rem,4vw,2rem);border:1px solid var(--mist);border-radius:18px}h1{margin-bottom:1rem;font-size:clamp(2rem,6vw,3rem)}h2{margin-top:1.8rem;font-size:1.25rem}footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--mist);font-size:.9rem}footer a{margin-right:.5rem}</style>
 </head>
-<body><main>
-  <p><a href="/">← Retour à Hublot</a></p>
+<body>
+<main>
+  <header><a class="brand" href="/" aria-label="Lienvo, accueil">Lienvo</a><button id="theme" class="btn" type="button" aria-pressed="false">Mode sombre</button></header>
   <article>
     <h1>Confidentialité et cookies</h1>
-    <p>Dernière mise à jour : 20 novembre 2026.</p>
-    <p>Hublot est un projet personnel gratuit, sans compte utilisateur et sans outil de mesure d’audience, publicité ou profilage.</p>
-    <h2>Données utilisées pour faire fonctionner Hublot</h2>
+    <p>Dernière mise à jour : 21 novembre 2026.</p>
+    <p>Lienvo est un projet personnel gratuit. Il ne demande pas de compte et son code applicatif n’intègre pas de publicité, d’outil de mesure d’audience ou de profilage. Cette page décrit les traitements nécessaires au fonctionnement du service. Le fournisseur d’hébergement et les fournisseurs réseau peuvent aussi traiter des données techniques conformément à leurs propres politiques.</p>
+    <h2>Qui est responsable du traitement ?</h2>
+    <p>Le service est édité à titre personnel par Jed Aloui. Pour toute question sur les données traitées par Lienvo, contactez <a href="mailto:jed.aloui.developer@gmail.com">jed.aloui.developer@gmail.com</a>.</p>
+    <h2>Quelles données sont utilisées et pourquoi ?</h2>
     <ul>
-      <li><strong>Adresse IP :</strong> transmise au Worker Cloudflare lors des connexions. Le service l’utilise en mémoire pour limiter les essais de codes invalides (seuil de 8 essais sur une fenêtre d’une minute). L’application ne crée pas de profil d’utilisateur.</li>
-      <li><strong>Code d’appairage :</strong> un code aléatoire à 6 chiffres est utilisé pour joindre les appareils. Il expire au bout de 5 minutes et ne peut être utilisé qu’une fois. Le code et les connexions associées sont gardés en mémoire de fonctionnement, pas dans une base Hublot.</li>
-      <li><strong>Signalisation WebRTC :</strong> des messages temporaires servent à négocier la connexion entre les deux navigateurs. La vidéo et les fichiers sont ensuite envoyés directement entre les appareils lorsque la connexion pair-à-pair fonctionne ; Hublot ne les enregistre pas sur un espace de stockage applicatif.</li>
-      <li><strong>Réseau :</strong> le navigateur interroge le service STUN de Cloudflare pour établir WebRTC. Les informations réseau nécessaires à cette connexion, dont l’adresse IP, peuvent être communiquées aux services réseau et à l’autre appareil.</li>
+      <li><strong>Adresse IP et informations de connexion :</strong> elles sont reçues par l’infrastructure Cloudflare lors des requêtes. Le Worker utilise l’adresse IP en mémoire pour limiter les tentatives de saisie de codes invalides. Le but est de sécuriser l’appairage et de faire fonctionner le service.</li>
+      <li><strong>Code d’appairage et signalisation WebRTC :</strong> un code aléatoire est utilisé pour mettre les appareils en relation. Il est à usage unique et expire au bout de cinq minutes s’il n’est pas utilisé. Les messages de signalisation sont relayés temporairement pendant la négociation.</li>
+      <li><strong>Caméra et fichiers :</strong> quand vous l’activez ou choisissez un fichier, les données sont transmises directement entre les deux navigateurs par WebRTC si le réseau le permet. Le service Lienvo ne les enregistre pas dans une base applicative. Des relais réseau peuvent être utilisés selon la configuration et le réseau ; les informations réseau nécessaires peuvent alors être traitées par les fournisseurs concernés et visibles par l’appareil appairé.</li>
+      <li><strong>Préférence d’apparence :</strong> votre choix du thème clair ou sombre peut être conservé dans le stockage local de votre navigateur. Cette préférence reste sur votre appareil et n’est pas envoyée à Lienvo.</li>
     </ul>
-    <p>Cloudflare fournit l’hébergement du Worker et du Durable Object et peut traiter des données techniques de requête conformément à ses propres conditions et politiques. Consultez la <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener noreferrer">politique de confidentialité de Cloudflare</a>. La durée de conservation des journaux techniques du fournisseur dépend de ses réglages et politiques, et n’est pas contrôlée par Hublot.</p>
-    <h2>Cookies et traceurs</h2>
-    <p>Le code de Hublot ne dépose pas de cookie et n’utilise pas de traceur publicitaire ou de mesure d’audience. Le choix du thème sombre reste limité à la page ouverte et n’est pas enregistré. Le QR code est produit par le Worker Hublot ; les polices distantes et le générateur QR tiers ne sont pas chargés. Hublot n’affiche donc pas de bandeau de consentement pour des traceurs facultatifs. Le fournisseur d’hébergement peut toutefois appliquer ses propres mécanismes techniques de sécurité.</p>
-    <h2>Vos droits et contact</h2>
-    <p>Pour toute demande relative à vos données, écrivez à <a href="mailto:jed.aloui.developer@gmail.com">jed.aloui.developer@gmail.com</a>. Vous pouvez également adresser une réclamation à la <a href="https://www.cnil.fr/fr/plaintes" rel="noopener noreferrer">CNIL</a>. Les données de session étant temporaires et sans compte, une demande peut nécessiter des informations permettant d’identifier la connexion concernée.</p>
-    <h2>Précaution d’usage</h2>
-    <p>Ne laissez pas le code d’appairage visible ou accessible à une personne non autorisée. La connexion WebRTC peut révéler des informations réseau aux appareils appairés. N’activez la caméra et ne transférez des fichiers qu’avec l’accord des personnes concernées.</p>
+    <h2>Base légale, destinataires et durée</h2>
+    <p>La base légale est l’exécution du service demandé pour l’appairage et l’envoi de fichiers ; la limitation des tentatives d’appairage repose sur l’intérêt légitime à protéger le service contre les essais abusifs. Les destinataires techniques sont Cloudflare, qui héberge le Worker et son objet durable, ainsi que les services réseau nécessaires à WebRTC selon la configuration. Les codes et messages d’appairage sont temporaires ; le code expire après cinq minutes. Lienvo ne met pas en place de compte ni de base applicative pour conserver les vidéos ou fichiers. Les traitements techniques et journaux éventuellement produits par Cloudflare sont soumis à ses propres réglages, durées et conditions. Cloudflare indique traiter des métadonnées de trafic qui peuvent inclure des adresses IP pendant une période limitée ; consultez sa documentation pour les informations applicables à son service.</p>
+    <p>Cloudflare peut traiter certaines métadonnées dans différents pays, y compris aux États-Unis et dans l’Union européenne. Pour les détails sur ses garanties et traitements, consultez sa <a href="https://www.cloudflare.com/trust-hub/gdpr/" target="_blank" rel="noopener noreferrer">page RGPD</a> et sa <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">politique de confidentialité</a>.</p>
+    <h2>Vos droits</h2>
+    <p>Vous pouvez contacter l’éditeur à l’adresse ci-dessus pour demander l’accès aux données personnelles vous concernant, leur rectification ou leur effacement, ou exercer les autres droits applicables. Comme Lienvo ne crée pas de compte et que les données de session sont temporaires, il peut être nécessaire de fournir suffisamment d’éléments pour retrouver une session précise. Vous pouvez aussi déposer une réclamation auprès de la <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener noreferrer">CNIL</a>.</p>
+    <h2>Cookies et autres traceurs</h2>
+    <p>Le code applicatif de Lienvo ne dépose pas de cookie publicitaire ou de mesure d’audience et ne charge pas de police ou de générateur de QR code tiers. Le thème est enregistré, si le navigateur le permet, dans son stockage local ; ce n’est pas un cookie et cette préférence n’est pas transmise au serveur. Les protections de l’hébergeur peuvent toutefois utiliser des mécanismes techniques ou déposer des cookies selon la configuration du domaine. Le comportement effectif doit être vérifié sur le site en production après tout changement de sécurité ou l’ajout d’un nouvel outil. Si des traceurs soumis au consentement sont ajoutés, l’information et le recueil du consentement devront être adaptés avant leur activation.</p>
+    <p>La CNIL explique les règles applicables aux <a href="https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies" target="_blank" rel="noopener noreferrer">cookies et autres traceurs</a> ainsi que les informations à communiquer aux personnes dans ses recommandations sur la <a href="https://www.cnil.fr/fr/conformite-rgpd-information-des-personnes-et-transparence" target="_blank" rel="noopener noreferrer">transparence RGPD</a>.</p>
+    <h2>Sécurité et précautions</h2>
+    <p>Ne communiquez le code qu’au téléphone que vous voulez relier. N’activez pas la caméra et ne transférez pas de fichiers contenant des informations sensibles sur un réseau ou un appareil que vous ne contrôlez pas. La connexion directe peut révéler des informations réseau aux appareils appairés.</p>
   </article>
-  <footer><a href="/conditions.html">Conditions d’utilisation</a> · <a href="/mentions-legales.html">Mentions légales</a></footer>
-</main></body>
+  <footer><a href="/conditions.html">Conditions d’utilisation</a><a href="/mentions-legales.html">Mentions légales</a></footer>
+</main>
+<script src="/theme.js" defer></script>
+</body>
 </html>
