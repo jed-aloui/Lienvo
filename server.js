@@ -1,4 +1,4 @@
-// Hublot : serveur d'appairage (signalisation uniquement). Vidéo et fichiers passent en pair à pair.
+// Lienvo : serveur d'appairage (signalisation uniquement). Vidéo et fichiers passent en pair à pair.
 import express from 'express';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
@@ -120,4 +120,4 @@ setInterval(() => wss.clients.forEach(ws => {
   ws.alive = false; ws.ping();
 }), 25000);
 
-server.listen(PORT, () => console.log(`Hublot : http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`Lienvo : http://localhost:${PORT}`));
