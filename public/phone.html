@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hublot – téléphone</title>
+<meta name="description" content="Reliez votre téléphone à un ordinateur pour utiliser sa caméra et lui envoyer des fichiers.">
+<meta name="theme-color" content="#EDF1F5">
+<title>Lienvo – téléphone</title>
 <link rel="stylesheet" href="/hublot.css">
 <style>
 main{max-width:30rem;margin:0 auto;padding:1.25rem 1.25rem 3rem}
@@ -31,7 +33,7 @@ footer a{display:inline-block;margin-right:.65rem}
 </head>
 <body>
 <main>
-  <header><span class="brand">Hublot</span><div class="head-actions"><button id="theme" class="btn" type="button" aria-pressed="false">Mode sombre</button><span id="state" class="state">Non connecté</span></div></header>
+  <header><span class="brand">Lienvo</span><div class="head-actions"><button id="theme" class="btn" type="button" aria-pressed="false">Mode sombre</button><span id="state" class="state">Non connecté</span></div></header>
 
   <section id="s1">
     <h1>Entrez le code affiché sur l’écran.</h1>
@@ -48,6 +50,7 @@ footer a{display:inline-block;margin-right:.65rem}
       <button id="cam" class="btn primary">Activer la caméra</button>
       <button id="flip" class="btn" hidden>Changer de caméra</button>
       <button id="send" class="btn">Envoyer un fichier</button>
+      <p class="hint">Taille maximale : 50 Mo par fichier.</p>
       <input id="file" type="file" multiple hidden>
     </div>
     <ul id="sent"></ul>
@@ -59,16 +62,10 @@ footer a{display:inline-block;margin-right:.65rem}
 const $ = s => document.querySelector(s);
 let ws, pc, ctl, files, stream, track, sender, wake, ice = [], chain = Promise.resolve(), facing = 'environment';
 
-function setTheme(dark) {
-  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-  $('#theme').textContent = dark ? 'Mode clair' : 'Mode sombre';
-  $('#theme').setAttribute('aria-pressed', String(dark));
-}
-setTheme(window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false);
-$('#theme').onclick = () => setTheme(document.documentElement.dataset.theme !== 'dark');
 
-const sig = data => ws.send(JSON.stringify({ type: 'signal', data }));
+const sig = data => { if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'signal', data })); };
 const setState = (txt, on) => { $('#state').textContent = txt; $('#state').classList.toggle('on', !!on); };
+const pendingIce = [];
 const ERR = {
   invalid: 'Code inconnu ou expiré. Vérifiez les chiffres sur l’écran de l’ordinateur.',
   locked: 'Trop d’essais. Attendez une minute, puis réessayez.',
@@ -84,7 +81,7 @@ async function join(code) {
   ws.onerror = () => { $('#err').textContent = ERR.net; $('#go').disabled = false; };
   ws.onmessage = e => {
     const m = JSON.parse(e.data);
-    if (m.type === 'error') { $('#err').textContent = ERR[m.reason]; $('#go').disabled = false; }
+    if (m.type === 'error') { $('#err').textContent = ERR[m.reason] || 'La connexion a été refusée. Vérifiez le code puis réessayez.'; $('#go').disabled = false; }
     else if (m.type === 'paired') startPeer();
     else if (m.type === 'peer-left') reset(ERR.gone);
     else if (m.type === 'signal') chain = chain.then(() => onSignal(m.data)).catch(console.error);
@@ -107,10 +104,17 @@ function startPeer() {
 }
 async function onSignal(d) {
   if (!pc) return;
-  if (d.sdp) await pc.setRemoteDescription(d.sdp);
-  else if (d.candidate) { try { await pc.addIceCandidate(d.candidate); } catch {} }
+  if (d.sdp) {
+    await pc.setRemoteDescription(d.sdp);
+    while (pendingIce.length) { try { await pc.addIceCandidate(pendingIce.shift()); } catch {} }
+  } else if (d.candidate) {
+    if (!pc.remoteDescription) pendingIce.push(d.candidate);
+    else { try { await pc.addIceCandidate(d.candidate); } catch {} }
+  }
 }
 function reset(msg) {
+  pendingIce.length = 0;
+  if (ws) { try { ws.close(); } catch {} }
   if (pc) pc.close(); if (track) track.stop();
   pc = ctl = files = stream = track = sender = null;
   $('#s2').hidden = true; $('#s1').hidden = false; $('#go').disabled = false; $('#pv').srcObject = null;
@@ -153,6 +157,7 @@ async function keepAwake() {
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && track) keepAwake(); });
 
 async function sendFile(f, bar) {
+  if (f.size > 50 * 1024 * 1024) throw new Error('Fichier trop volumineux');
   const CH = 16384; let off = 0;
   files.send(JSON.stringify({ t: 'meta', name: f.name, size: f.size, type: f.type }));
   while (off < f.size) {
@@ -171,7 +176,7 @@ $('#file').onchange = async e => {
     const li = document.createElement('li'), t = document.createElement('div'), bar = document.createElement('progress');
     t.textContent = f.name; bar.max = 1; bar.value = 0; li.append(t, bar); $('#sent').prepend(li);
     try { await sendFile(f, bar); t.textContent = f.name + ' : envoyé'; }
-    catch { t.textContent = f.name + ' : échec de l’envoi'; }
+    catch (error) { t.textContent = f.name + (error?.message === 'Fichier trop volumineux' ? ' : limite de 50 Mo' : ' : échec de l’envoi'); }
   }
   e.target.value = '';
 };
