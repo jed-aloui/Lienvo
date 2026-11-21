@@ -1,4 +1,4 @@
-// Hublot sur Cloudflare Workers : pages statiques + appairage (Durable Object).
+// Lienvo sur Cloudflare Workers : pages statiques + appairage (Durable Object).
 // La vidéo et les fichiers ne passent jamais ici : ils vont en pair à pair (WebRTC).
 import { DurableObject } from 'cloudflare:workers';
 import QRCode from 'qrcode';
@@ -12,20 +12,39 @@ export default {
     const asset = path => env.ASSETS.fetch(new Request(new URL(path, url), request));
 
     if (url.pathname === '/ws') {
-      if (request.headers.get('Upgrade') !== 'websocket') return new Response('WebSocket attendu', { status: 426 });
+      if (request.headers.get('Upgrade') !== 'websocket') return secure(new Response('WebSocket attendu', { status: 426 }));
+      const origin = request.headers.get('Origin');
+      if (!origin || new URL(origin).origin !== url.origin) return secure(new Response('Origine refusée', { status: 403 }));
       return env.HUB.get(env.HUB.idFromName('global')).fetch(request);
     }
-    if (url.pathname === '/config') return config(env);
-    if (url.pathname === '/qr') return qr(url);
-    if (url.pathname === '/') return asset('/index.html');
-    if (url.pathname === '/p') return asset('/phone.html');
-    return env.ASSETS.fetch(request);
+    if (url.pathname === '/config') return secure(await config(env));
+    if (url.pathname === '/qr') return secure(await qr(url));
+    if (url.pathname === '/') return secure(await asset('/index.html'));
+    if (url.pathname === '/p') return secure(await asset('/phone.html'));
+    if (url.pathname === '/conditions.html') return secure(await asset('/conditions.html'));
+    if (url.pathname === '/confidentialite.html') return secure(await asset('/confidentialite.html'));
+    if (url.pathname === '/mentions-legales.html') return secure(await asset('/mentions-legales.html'));
+    return secure(await env.ASSETS.fetch(request));
   }
 };
 
+function secure(response) {
+  const headers = new Headers(response.headers);
+  headers.set('X-Content-Type-Options', 'nosniff');
+  headers.set('X-Frame-Options', 'DENY');
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=(), fullscreen=(self)');
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
 async function qr(url) {
-  const text = (url.searchParams.get('t') || '').slice(0, 300);
-  const svg = await QRCode.toString(text, { type: 'svg', margin: 1, color: { dark: '#10203A', light: '#FFFFFF' } });
+  const text = url.searchParams.get('t') || '';
+  let target;
+  try { target = new URL(text); } catch { return new Response('QR invalide', { status: 400 }); }
+  const code = target.searchParams.get('c') || '';
+  if (target.origin !== url.origin || target.pathname !== '/p' || !/^\d{6}$/.test(code) || target.searchParams.size !== 1) {
+    return new Response('QR invalide', { status: 400 });
+  }
+  const svg = await QRCode.toString(target.href, { type: 'svg', margin: 1, color: { dark: '#10203A', light: '#FFFFFF' } });
   return new Response(svg, { headers: { 'Content-Type': 'image/svg+xml; charset=utf-8', 'Cache-Control': 'no-store' } });
 }
 
@@ -76,7 +95,12 @@ export class Hub extends DurableObject {
 
   newCode() {
     let c;
-    do { c = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1e6).padStart(6, '0'); } while (this.rooms.has(c));
+    do {
+      const values = new Uint32Array(1);
+      crypto.getRandomValues(values);
+      if (values[0] >= 4294000000) continue;
+      c = String(values[0] % 1e6).padStart(6, '0');
+    } while (this.rooms.has(c));
     return c;
   }
   release(c) {
@@ -96,12 +120,14 @@ export class Hub extends DurableObject {
   }
 
   onMessage(c, raw) {
+    if (typeof raw !== 'string' || raw.length > 65536) return;
     let m; try { m = JSON.parse(raw); } catch { return; }
     if (m.type === 'host' && !c.role) {
       c.role = 'pc'; this.offerCode(c);
     } else if (m.type === 'join' && !c.role) {
       if (this.locked(c.ip)) return this.send(c, { type: 'error', reason: 'locked' });
-      const code = String(m.code || '').replace(/\D/g, '');
+      const code = String(m.code || '').replace(/\s/g, '');
+      if (!/^\d{6}$/.test(code)) { this.fail(c.ip); return this.send(c, { type: 'error', reason: 'invalid' }); }
       const room = this.rooms.get(code);
       if (!room) { this.fail(c.ip); return this.send(c, { type: 'error', reason: 'invalid' }); }
       c.role = 'phone';
