@@ -60,6 +60,7 @@ footer a{display:inline-block;margin-right:.65rem}
 
 <script>
 const $ = s => document.querySelector(s);
+const forceRelay = new URLSearchParams(location.search).get('turntest') === '1';
 let ws, pc, ctl, files, stream, track, sender, wake, ice = [], chain = Promise.resolve(), facing = 'environment';
 
 
@@ -90,7 +91,9 @@ async function join(code) {
 
 function startPeer() {
   $('#s1').hidden = true; $('#s2').hidden = false; setState('Connexion…');
-  pc = new RTCPeerConnection({ iceServers: ice });
+  const rtcConfig = { iceServers: ice };
+  if (forceRelay) rtcConfig.iceTransportPolicy = 'relay';
+  pc = new RTCPeerConnection(rtcConfig);
   files = pc.createDataChannel('files'); files.binaryType = 'arraybuffer'; files.bufferedAmountLowThreshold = 1 << 20;
   ctl = pc.createDataChannel('ctl'); ctl.onmessage = e => command(JSON.parse(e.data));
   pc.onicecandidate = e => e.candidate && sig({ candidate: e.candidate });
@@ -98,7 +101,7 @@ function startPeer() {
   pc.onconnectionstatechange = () => {
     const s = pc.connectionState;
     if (s === 'connected') setState('Connecté à l’ordinateur', true);
-    else if (s === 'failed') { setState('Échec'); $('#status').textContent = 'Impossible de joindre l’ordinateur directement. Un serveur TURN est probablement nécessaire sur ce réseau.'; }
+    else if (s === 'failed') { setState('Échec'); $('#status').textContent = forceRelay ? 'Échec de connexion au relais TURN. Vérifiez les accès TURN et le réseau.' : 'Connexion vidéo impossible. Relancez le test depuis l’ordinateur avec ?turntest=1.'; }
     else setState('Connexion…');
   };
 }

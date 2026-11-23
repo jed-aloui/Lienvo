@@ -40,8 +40,12 @@ async function qr(url) {
   const text = url.searchParams.get('t') || '';
   let target;
   try { target = new URL(text); } catch { return new Response('QR invalide', { status: 400 }); }
-  const code = target.searchParams.get('c') || '';
-  if (target.origin !== url.origin || target.pathname !== '/p' || !/^\d{6}$/.test(code) || target.searchParams.size !== 1) {
+  const codes = target.searchParams.getAll('c');
+  const relayModes = target.searchParams.getAll('turntest');
+  const code = codes[0] || '';
+  const paramsAllowed = [...target.searchParams.keys()].every(key => key === 'c' || key === 'turntest');
+  const relayModeValid = relayModes.length === 0 || (relayModes.length === 1 && relayModes[0] === '1');
+  if (target.origin !== url.origin || target.pathname !== '/p' || !/^\d{6}$/.test(code) || codes.length !== 1 || !paramsAllowed || !relayModeValid) {
     return new Response('QR invalide', { status: 400 });
   }
   const svg = await QRCode.toString(target.href, { type: 'svg', margin: 1, color: { dark: '#10203A', light: '#FFFFFF' } });

@@ -78,6 +78,7 @@
 
 <script>
 const $ = s => document.querySelector(s);
+const forceRelay = new URLSearchParams(location.search).get('turntest') === '1';
 let ws, pc, ctl, ice = [], chain = Promise.resolve(), torchOn = false;
 let incoming = null, pendingIce = [];
 
@@ -93,13 +94,18 @@ function signal(data) {
 }
 function showCode(code) {
   $('#code').textContent = code.slice(0, 3) + ' ' + code.slice(3);
-  const link = location.origin + '/p?c=' + encodeURIComponent(code);
+  const phoneUrl = new URL('/p', location.origin);
+  phoneUrl.searchParams.set('c', code);
+  if (forceRelay) phoneUrl.searchParams.set('turntest', '1');
+  const link = phoneUrl.href;
   $('#phoneLink').innerHTML = '<a href="' + link + '" target="_blank" rel="noopener">Ouvrir la page téléphone</a>';
   $('#qr').src = '/qr?t=' + encodeURIComponent(link);
   $('#qr').hidden = false;
 }
 function setupPeer() {
-  pc = new RTCPeerConnection({ iceServers: ice, iceTransportPolicy: 'relay' });
+  const rtcConfig = { iceServers: ice };
+  if (forceRelay) rtcConfig.iceTransportPolicy = 'relay';
+  pc = new RTCPeerConnection(rtcConfig);
   pc.onicecandidate = e => { if (e.candidate) signal({ candidate: e.candidate }); };
   pc.ontrack = e => {
     $('#video').srcObject = e.streams[0];
@@ -110,7 +116,7 @@ function setupPeer() {
     if (pc.connectionState === 'connected') setState('Téléphone connecté', true);
     if (pc.connectionState === 'failed') {
       setState('Connexion WebRTC impossible');
-      $('#status').textContent = 'La connexion directe a échoué. Ce réseau peut nécessiter un serveur TURN.';
+      $('#status').textContent = forceRelay ? 'Échec de connexion au relais TURN. Vérifiez les accès TURN et le réseau.' : 'Connexion vidéo impossible. Relancez avec ?turntest=1 pour tester le relais TURN.';
     }
   };
   pc.ondatachannel = e => {
