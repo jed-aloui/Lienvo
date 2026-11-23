@@ -99,7 +99,7 @@ function showCode(code) {
   $('#qr').hidden = false;
 }
 function setupPeer() {
-  pc = new RTCPeerConnection({ iceServers: ice });
+  pc = new RTCPeerConnection({ iceServers: ice, iceTransportPolicy: 'relay' });
   pc.onicecandidate = e => { if (e.candidate) signal({ candidate: e.candidate }); };
   pc.ontrack = e => {
     $('#video').srcObject = e.streams[0];
