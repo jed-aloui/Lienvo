@@ -53,7 +53,7 @@ async function config(env) {
   const iceServers = [{ urls: 'stun:stun.cloudflare.com:3478' }];
   if (env.TURN_KEY_ID && env.TURN_API_TOKEN) {
     try {
-      const r = await fetch(`https://rtc.live.cloudflare.com/v1/turn/keys/${env.TURN_KEY_ID}/credentials/generate`, {
+      const r = await fetch(`https://rtc.live.cloudflare.com/v1/turn/keys/${env.TURN_KEY_ID}/credentials/generate-ice-servers`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${env.TURN_API_TOKEN}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ ttl: 86400 })
