@@ -55,6 +55,7 @@ async function qr(url) {
 // STUN Cloudflare, plus TURN Cloudflare (TURN_KEY_ID + TURN_API_TOKEN) ou TURN générique (TURN_URL, TURN_USER, TURN_PASS)
 async function config(env) {
   const iceServers = [{ urls: 'stun:stun.cloudflare.com:3478' }];
+  let turnStatus = 'not_configured';
   if (env.TURN_KEY_ID && env.TURN_API_TOKEN) {
     try {
       const r = await fetch(`https://rtc.live.cloudflare.com/v1/turn/keys/${env.TURN_KEY_ID}/credentials/generate-ice-servers`, {
@@ -62,12 +63,30 @@ async function config(env) {
         headers: { Authorization: `Bearer ${env.TURN_API_TOKEN}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ ttl: 86400 })
       });
-      if (r.ok) iceServers.push(...[].concat((await r.json()).iceServers));
-    } catch {}
+      if (!r.ok) {
+        turnStatus = `upstream_${r.status}`;
+      } else {
+        const payload = await r.json();
+        const supplied = Array.isArray(payload.iceServers) ? payload.iceServers : [];
+        const relays = supplied.filter(server => {
+          const urls = Array.isArray(server.urls) ? server.urls : [server.urls];
+          return !!server.username && !!server.credential && urls.some(value => typeof value === 'string' && /^turns?:/i.test(value));
+        });
+        if (relays.length) {
+          iceServers.push(...relays);
+          turnStatus = 'ready';
+        } else {
+          turnStatus = 'invalid_response';
+        }
+      }
+    } catch {
+      turnStatus = 'network_error';
+    }
   } else if (env.TURN_URL) {
     iceServers.push({ urls: env.TURN_URL.split(','), username: env.TURN_USER, credential: env.TURN_PASS });
+    turnStatus = env.TURN_USER && env.TURN_PASS ? 'ready' : 'incomplete_config';
   }
-  return Response.json({ iceServers }, { headers: { 'Cache-Control': 'no-store' } });
+  return Response.json({ iceServers, turnStatus }, { headers: { 'Cache-Control': 'no-store' } });
 }
 
 export class Hub extends DurableObject {
